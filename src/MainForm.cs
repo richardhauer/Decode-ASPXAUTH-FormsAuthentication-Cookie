@@ -10,16 +10,24 @@ using System.Windows.Forms;
 
 namespace DecodeASPXAUTH
 {
-	public partial class frmMain : Form
+	public partial class MainForm : Form
 	{
 		private readonly CookieDecoder Decoder;
 
-		public frmMain()
+		public MainForm()
 		{
 			InitializeComponent();
 
 			Decoder = new CookieDecoder();
 			Decoder.Recalculated += Decoder_Recalculated;
+
+			LoadFromSettings();
+		}
+
+		private void LoadFromSettings()
+		{
+			txtDecryptionKey.Text = Properties.Settings.Default.DecryptionKey;
+			txtValidationKey.Text = Properties.Settings.Default.ValidationKey;
 		}
 
 		private void Decoder_Recalculated( string decodedValue )
@@ -32,6 +40,13 @@ namespace DecodeASPXAUTH
 			Decoder.SetCookieValue( txtCookie.Text );
 			Decoder.SetDecryptionKey( txtDecryptionKey.Text );
 			Decoder.SetValidationKey( txtValidationKey.Text );
+		}
+
+		private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
+		{
+			Properties.Settings.Default.DecryptionKey = txtDecryptionKey.Text;
+			Properties.Settings.Default.ValidationKey = txtValidationKey.Text;
+			Properties.Settings.Default.Save();
 		}
 	}
 }
